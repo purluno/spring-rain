@@ -8,6 +8,7 @@ import org.springframework.orm.hibernate4.HibernateTransactionManager
 import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
+import org.springframework.transaction.support.TransactionTemplate
 
 
 /**
@@ -25,7 +26,7 @@ class AppConfigHibernate {
 		bds.url = "jdbc:h2:~/.h2/spring-rain;AUTO_SERVER=TRUE"
 		bds
 	}
-	
+
 	@Bean
 	SessionFactory sessionFactory() {
 		def b = new LocalSessionFactoryBuilder(dataSource())
@@ -33,11 +34,16 @@ class AppConfigHibernate {
 		b.setProperty("hibernate.hbm2ddl.auto", "update")
 		b.buildSessionFactory()
 	}
-	
+
 	@Bean
 	PlatformTransactionManager transactionManager() {
 		def tm = new HibernateTransactionManager()
 		tm.sessionFactory = sessionFactory()
 		tm
+	}
+
+	@Bean
+	TransactionTemplate transactionTemplate() {
+		new TransactionTemplate(transactionManager())
 	}
 }
